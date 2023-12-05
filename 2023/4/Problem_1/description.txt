@@ -1,4 +1,4 @@
-I got all these scratchcards as a gift, but I can't figure out what I've won."
+"... I got all these scratchcards as a gift, but I can't figure out what I've won."
 
 The Elf leads you over to the pile of colorful cards. There, you discover dozens of scratchcards, all with their opaque covering already scratched off. Picking one up, it looks like each card has two lists of numbers separated by a vertical bar (|): a list of winning numbers and then a list of numbers you have. You organize the information into a table (your puzzle input).
 

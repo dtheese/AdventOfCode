@@ -1,0 +1,53 @@
+#!/bin/bash
+
+set -o nounset
+set -o errexit
+set -o pipefail
+
+declare -r HEADER_TEST_DIR=header_tests
+
+mkdir -p $HEADER_TEST_DIR
+
+for ONE_FILE in $(ls *.h 2> /dev/null || true)
+do
+   FILENAME_BASE=$(basename $ONE_FILE)
+   FILENAME_NO_SUFFIX=${FILENAME_BASE%.*}
+   HEADER_TEST=$HEADER_TEST_DIR/${FILENAME_NO_SUFFIX}_header_test.cpp
+
+   if [[ ! -f $HEADER_TEST ]]; then
+      echo "#include \"$FILENAME_BASE\"" >  $HEADER_TEST
+      echo ""                            >> $HEADER_TEST
+      echo "int main()"                  >> $HEADER_TEST
+      echo "{"                           >> $HEADER_TEST
+      echo "}"                           >> $HEADER_TEST
+   fi
+done
+
+cd $HEADER_TEST_DIR
+
+if ls 2> /dev/null *.cpp; then
+   set -x
+
+   # Must manually specify -lstdc++fs (*in last position*) due to bug in g++ versions < 9
+   g++ -std=c++17 -pthread -Wall -Wpedantic -Wextra -Ofast -c -I .. *.cpp -lstdc++fs
+
+   set +x
+   rm -f *.o *.cpp
+   echo ""
+fi
+
+cd ..
+rmdir $HEADER_TEST_DIR
+
+rm -f main
+
+# This is my preferred compiler invocation. However, this has been seen in some
+# cases to generate incorrect code. If this happens, try less aggressive optimization.
+set -x
+# Must manually specify -lstdc++fs (*in last position*) due to bug in g++ versions < 9
+g++ -std=c++17 -pthread -Wall -Wpedantic -Wextra -Ofast -o main *.cpp -lstdc++fs
+set +x
+
+echo ""
+
+exit 0
